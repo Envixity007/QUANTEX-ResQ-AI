@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ResQ AI — QUANTEX
 
 Starter repository for the ResQ AI disaster-response project.
@@ -26,3 +27,7 @@ Check dataset licenses, access conditions, and privacy requirements before commi
 
 ## Outputs
 CSV files are written to `data/processed/`. The USGS feed is public and refreshed when the pipeline runs.
+=======
+# QUANTEX-ResQ-AI
+AI-powered disaster response optimization using multi-source data integration, severity classification, and humanitarian intelligence
+>>>>>>> ae625519db694bc4fa0ecc480bedf6aca2afdde9
