@@ -9,6 +9,9 @@ import numpy as np
 from pathlib import Path
 from datetime import datetime, timezone
 
+import torch
+import torch.nn as nn
+
 # PAGE CONFIGURATION
 
 st.set_page_config(
@@ -180,6 +183,11 @@ DATA_PATH = ROOT / "data" / "processed" / "ibm final data.xlsx"
 MODEL_PATH = ROOT / "models" / "severity_model.joblib"
 LABEL_PATH = ROOT / "models" / "severity_labels.joblib"
 
+# HumAID NLP model artifacts
+NLP_MODEL_PATH = ROOT / "models" / "humaid_text_model.pt"
+NLP_VECTORIZER_PATH = ROOT / "models" / "humaid_tfidf.joblib"
+NLP_LABELS_PATH = ROOT / "models" / "humaid_labels.joblib"
+
 USGS_URL = (
     "https://earthquake.usgs.gov/earthquakes/feed/v1.0/"
     "summary/all_day.geojson"
@@ -272,6 +280,64 @@ def prepare_features(df):
     return X
 
 
+
+# HUM AID NLP CLASSIFIER
+
+class DisasterTextClassifier(nn.Module):
+    def __init__(self, input_size, output_size):
+        super().__init__()
+        self.network = nn.Sequential(
+            nn.Linear(input_size, 256),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(128, output_size),
+        )
+
+    def forward(self, x):
+        return self.network(x)
+
+
+@st.cache_resource
+def load_nlp_model():
+    """Load the trained HumAID classifier and preprocessing artifacts once."""
+    required = [NLP_MODEL_PATH, NLP_VECTORIZER_PATH, NLP_LABELS_PATH]
+    if not all(path.exists() for path in required):
+        return None, None, None
+
+    checkpoint = torch.load(
+        NLP_MODEL_PATH,
+        map_location="cpu",
+        weights_only=True,
+    )
+    vectorizer = joblib.load(NLP_VECTORIZER_PATH)
+    encoder = joblib.load(NLP_LABELS_PATH)
+
+    model = DisasterTextClassifier(
+        checkpoint["input_size"],
+        checkpoint["num_classes"],
+    )
+    model.load_state_dict(checkpoint["state_dict"])
+    model.eval()
+    return model, vectorizer, encoder
+
+
+def predict_disaster_tweet(tweet, model, vectorizer, encoder):
+    """Return predicted HumAID category, probability, and all class scores."""
+    features = vectorizer.transform([tweet]).toarray()
+    features = torch.tensor(features, dtype=torch.float32)
+
+    with torch.inference_mode():
+        probabilities = torch.softmax(model(features), dim=1)[0]
+
+    index = int(torch.argmax(probabilities).item())
+    label = encoder.inverse_transform([index])[0]
+    confidence = float(probabilities[index].item())
+    return label, confidence, probabilities.cpu().numpy()
+
+
 def style_chart(fig, height=320):
     fig.update_layout(
         height=height,
@@ -343,7 +409,7 @@ with st.sidebar:
         <div style="font-size:12px;line-height:2.5;">
         <span style="color:#46df9b;">●</span> USGS Earthquake Feed<br>
         <span style="color:#46df9b;">●</span> Historical Disaster Dataset<br>
-        <span style="color:#46df9b;">●</span> XGBoost Severity Model
+        <span style="color:#46df9b;">●</span> XGBoost Severity Model<br>\n        <span style="color:#46df9b;">●</span> HumAID NLP Classifier
         </div>
         """,
         unsafe_allow_html=True,
@@ -926,6 +992,107 @@ elif page == "AI Analysis":
                 except Exception as error:
                     st.error(f"Analysis failed: {error}")
 
+
+# HUMANITARIAN TWEET NLP SECTION
+
+if page == "AI Analysis":
+    st.divider()
+    st.header("Humanitarian Tweet Intelligence")
+    st.caption(
+        "Experimental PyTorch classifier trained on the HumAID disaster-tweet dataset."
+    )
+
+    nlp_model, nlp_vectorizer, nlp_encoder = load_nlp_model()
+
+    metric_col1, metric_col2, metric_col3 = st.columns(3)
+    metric_col1.metric("HumAID categories", "10")
+    metric_col2.metric("Held-out test accuracy", "73.94%")
+    metric_col3.metric("Test samples", "15,160")
+
+    st.warning(
+        "Experimental baseline: validation loss increased during training, "
+        "indicating overfitting. The missing_or_found_people category had "
+        "zero recall on the test set. Verify outputs manually; do not use "
+        "this model as the sole basis for emergency decisions."
+    )
+
+    if nlp_model is None:
+        st.info(
+            "NLP model files were not found. Run `python src/train_nlp.py` "
+            "and ensure these files exist in the project's models folder: "
+            "`humaid_text_model.pt`, `humaid_tfidf.joblib`, and "
+            "`humaid_labels.joblib`."
+        )
+    else:
+        with st.form("humaid_tweet_form"):
+            tweet_text = st.text_area(
+                "Disaster-related tweet",
+                placeholder=(
+                    "Example: People are trapped after the earthquake. "
+                    "We urgently need rescue teams."
+                ),
+                height=120,
+            )
+            classify_clicked = st.form_submit_button(
+                "Classify Tweet",
+                type="primary",
+                use_container_width=True,
+            )
+
+        if classify_clicked:
+            if not tweet_text.strip():
+                st.warning("Enter a tweet before running classification.")
+            else:
+                try:
+                    category, confidence, probabilities = predict_disaster_tweet(
+                        tweet_text.strip(),
+                        nlp_model,
+                        nlp_vectorizer,
+                        nlp_encoder,
+                    )
+
+                    result_col1, result_col2 = st.columns([2, 1])
+                    result_col1.metric("Predicted category", category)
+                    result_col2.metric("Model probability", f"{confidence:.1%}")
+
+                    st.caption(
+                        "Probability is the model's score, not a guarantee "
+                        "that the category is correct."
+                    )
+
+                    if category == "missing_or_found_people":
+                        st.error(
+                            "High caution: this category had zero recall in "
+                            "the reported test results. Do not rely on this "
+                            "prediction without human review."
+                        )
+
+                    probability_df = pd.DataFrame({
+                        "Category": nlp_encoder.classes_,
+                        "Probability": probabilities,
+                    }).sort_values("Probability", ascending=False)
+
+                    st.subheader("Category scores")
+                    fig = px.bar(
+                        probability_df.sort_values("Probability").tail(10),
+                        x="Probability",
+                        y="Category",
+                        orientation="h",
+                        color="Probability",
+                        color_continuous_scale=["#385d9d", "#9b7bff", "#ff6576"],
+                    )
+                    fig.update_layout(
+                        coloraxis_showscale=False,
+                        xaxis_tickformat=".0%",
+                    )
+                    st.plotly_chart(
+                        style_chart(fig, 360),
+                        use_container_width=True,
+                    )
+                except Exception as error:
+                    st.error(f"Tweet classification failed: {error}")
+
+
 # ABOUT PAGE
 
 elif page == "About":
@@ -948,6 +1115,7 @@ elif page == "About":
     - **Pandas** — data processing
     - **Plotly** — visual analytics
     - **XGBoost** — experimental severity classification
+    - **PyTorch + TF-IDF** — experimental HumAID tweet classification
     - **USGS** — live global earthquake feed
 
     ### Current capabilities
@@ -956,19 +1124,19 @@ elif page == "About":
     - Historical disaster exploration
     - Interactive charts and filters
     - Historical severity model integration
+    - Humanitarian tweet category prediction (when model artifacts are present)
 
     ### Important limitations
 
     - Earthquake events come from the global USGS past-day feed.
     - Historical dataset statistics describe the supplied dataset only.
     - Severity predictions are experimental and are not emergency alerts.
-    - IBM Granite and humanitarian-message classification are not represented
-      as integrated until their actual implementations are connected.
+    - The HumAID NLP classifier is an experimental baseline and overfits.
+    - The missing_or_found_people category had zero recall on the reported test set.
+    - IBM Granite is not integrated in this dashboard.
     """)
 
-# =========================================================
 # FOOTER
-# =========================================================
 
 st.divider()
 
