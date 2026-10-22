@@ -21,158 +21,240 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# CUSTOM CSS — DARK PROFESSIONAL UI
+# CUSTOM CSS — JET BLACK / CERULEAN / NEON PINK
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --ink: #050505;
+  --paper: #050505;
+  --panel: #101014;
+  --line: #24242B;
+  --muted: #A8A8B3;
+  --signal: #007BA7;
+  --teal: #007BA7;
+  --gold: #FF10F0;
+}
 
 html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
-
 .stApp {
-    background:
-        radial-gradient(ellipse at top left, #142238 0%, transparent 45%),
-        #080d16;
-    color: #e7edf7;
+  background: var(--paper);
+  color: var(--ink);
 }
-
+[data-testid="stHeader"] {
+  background: rgba(16,23,19,.96);
+}
 [data-testid="stSidebar"] {
-    background: #0b111d;
-    border-right: 1px solid #202b3b;
+  background: #09090D;
+  border-right: 1px solid #24242B;
 }
-
-[data-testid="stSidebar"] * {
-    color: #d8e2f0;
+[data-testid="stSidebar"] * { color: #F2F2F7; }
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
+  color: #A8A8B3;
 }
-
+[data-testid="stSidebar"] hr { border-color: #24242B; }
+[data-testid="stSidebar"] [data-testid="stRadio"] label {
+  padding: 7px 10px;
+  border-radius: 5px;
+}
+[data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
+  background: #14141B;
+}
 .block-container {
-    padding-top: 1.5rem;
-    padding-bottom: 2rem;
-    max-width: 1600px;
+  max-width: 1500px;
+  padding-top: 1.2rem;
+  padding-bottom: 3rem;
 }
-
-h1, h2, h3 {
-    color: #f4f7ff !important;
-    letter-spacing: -0.5px;
+h1, h2, h3, h4 {
+  color: var(--ink) !important;
+  letter-spacing: -0.045em;
 }
-
-p, label {
-    color: #aab8cc;
-}
+h1 { font-weight: 800 !important; }
+h2, h3 { font-weight: 750 !important; }
+p, label { color: #B8B8C2; }
+a { color: var(--teal) !important; }
 
 .hero {
-    padding: 30px 34px;
-    border-radius: 18px;
-    background: linear-gradient(110deg, #15243a, #101a2b 65%, #241b2c);
-    border: 1px solid #29384d;
-    margin-bottom: 22px;
+  background: var(--ink);
+  border-radius: 4px;
+  padding: 28px 32px 30px;
+  margin: 6px 0 24px;
+  border-left: 5px solid var(--signal);
+  position: relative;
 }
-
 .hero-label {
-    color: #ff6978;
-    text-transform: uppercase;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 2px;
+  color: #FF10F0;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2.2px;
+  font-weight: 500;
 }
-
 .hero h1 {
-    font-size: 38px;
-    margin: 8px 0 4px;
+  color: #F5F5FA !important;
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1;
+  margin: 14px 0 8px;
+  letter-spacing: -0.065em;
 }
-
 .hero p {
-    margin-bottom: 0;
-    font-size: 14px;
+  color: #B8B8C2;
+  max-width: 760px;
+  line-height: 1.65;
+  font-size: 13px;
 }
-
 .status-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #46df9b;
-    margin-right: 7px;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #007BA7;
+  margin-right: 7px;
 }
-
 .section-heading {
-    font-size: 19px;
-    font-weight: 700;
-    color: #f0f5ff;
-    margin: 14px 0 4px;
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -.045em;
+  margin: 20px 0 3px;
 }
-
 .section-subtitle {
-    color: #8496b0;
-    font-size: 12px;
-    margin-bottom: 15px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .35px;
+  margin-bottom: 17px;
 }
-
 div[data-testid="stMetric"] {
-    background: linear-gradient(145deg, #141f30, #101824);
-    border: 1px solid #273448;
-    padding: 19px 20px;
-    border-radius: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 17px 18px;
+  box-shadow: none;
 }
-
 div[data-testid="stMetricLabel"] {
-    color: #a8b8ce;
+  color: #A8A8B3;
+  font-family: 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  font-size: 10px;
 }
-
 div[data-testid="stMetricValue"] {
-    color: #f5f8ff;
-    font-weight: 800;
+  color: var(--ink);
+  font-weight: 800;
+  letter-spacing: -.06em;
 }
-
-div[data-testid="stDataFrame"] {
-    border: 1px solid #293548;
-    border-radius: 12px;
-    overflow: hidden;
+div[data-testid="stMetricDelta"] { font-size: 11px; }
+div[data-testid="stDataFrame"],
+div[data-testid="stTable"] {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
 }
-
 .stTabs [data-baseweb="tab-list"] {
-    gap: 8px;
-    background: #0d1522;
-    padding: 7px;
-    border-radius: 12px;
+  gap: 3px;
+  background: transparent;
+  border-bottom: 1px solid var(--line);
+  padding: 0;
 }
-
 .stTabs [data-baseweb="tab"] {
-    border-radius: 8px;
-    color: #aab8cc;
+  color: #A8A8B3;
+  background: transparent;
+  border-radius: 0;
+  padding: 10px 14px;
+  font-size: 12px;
 }
-
 .stTabs [aria-selected="true"] {
-    background: #263b59 !important;
-    color: white !important;
+  color: var(--ink) !important;
+  border-bottom: 2px solid var(--signal);
+  background: transparent !important;
+  font-weight: 800;
 }
-
-div.stButton > button {
-    border-radius: 9px;
-    border: 1px solid #34445b;
-    background: #172438;
-    color: white;
+div.stButton > button, div[data-testid="stDownloadButton"] button {
+  border-radius: 3px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: #F5F5FA;
+  font-weight: 700;
+  transition: transform .12s ease, background .12s ease;
 }
-
-div.stButton > button:hover {
-    border-color: #ff6476;
-    color: #ff8793;
+div.stButton > button:hover, div[data-testid="stDownloadButton"] button:hover {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: white;
+  transform: translateY(-1px);
 }
-
-hr {
-    border-color: #263448;
+div[data-testid="stTextInput"] input,
+div[data-testid="stTextArea"] textarea,
+div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
+  background: #101014;
+  border-color: #34343D;
+  border-radius: 3px;
 }
-
+[data-testid="stAlert"] { border-radius: 3px; }
+hr { border-color: var(--line); }
 .footer {
-    color: #72839d;
-    font-size: 11px;
-    text-align: center;
-    padding-top: 20px;
+  color: #A8A8B3;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-align: left;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  margin-top: 30px;
+}
+@media (max-width: 700px) {
+  .hero { padding: 22px 20px; }
+  .block-container { padding-left: 1rem; padding-right: 1rem; }
 }
 </style>
 """, unsafe_allow_html=True)
+
+# STRICT THREE-COLOUR THEME — jet black / cerulean blue / neon pink
+st.markdown("""
+<style>
+:root {
+  --ink: #F2F2F7; --paper: #050505; --panel: #101014; --line: #24242B;
+  --muted: #A8A8B3; --signal: #007BA7; --teal: #007BA7; --gold: #FF10F0;
+}
+.stApp, [data-testid="stAppViewContainer"] { background: #050505 !important; color: #F2F2F7 !important; }
+[data-testid="stHeader"] { background: rgba(17,21,19,.96) !important; }
+[data-testid="stSidebar"] { background: #101014 !important; border-right: 1px solid #24242B !important; }
+[data-testid="stSidebar"] * { color: #F2F2F7 !important; }
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p { color: #A8A8B3 !important; }
+[data-testid="stSidebar"] hr { border-color: #24242B !important; }
+h1,h2,h3,h4,h5,h6,.section-heading { color: #F2F2F7 !important; }
+p, label, [data-testid="stMarkdownContainer"] { color: #C4C4CE; }
+a { color: #FF10F0 !important; }
+.hero { background: #101014 !important; border-left-color: #007BA7 !important; }
+.hero h1 { color: #F5F5FA !important; }
+.hero p { color: #B8B8C2 !important; }
+.section-subtitle, .footer { color: #A8A8B3 !important; border-color: #24242B !important; }
+div[data-testid="stMetric"] { background: #101014 !important; border: 1px solid #24242B !important; border-radius: 2px !important; }
+div[data-testid="stMetricLabel"] { color: #B8B8C2 !important; }
+div[data-testid="stMetricValue"] { color: #F5F5FA !important; }
+div[data-testid="stDataFrame"], div[data-testid="stTable"] { border-color: #24242B !important; }
+.stTabs [data-baseweb="tab-list"] { border-color: #24242B !important; }
+.stTabs [data-baseweb="tab"] { color: #A8A8B3 !important; }
+.stTabs [aria-selected="true"] { color: #F5F5FA !important; border-bottom-color: #007BA7 !important; }
+div.stButton > button, div[data-testid="stDownloadButton"] button { background: #007BA7 !important; border: 1px solid #007BA7 !important; color: #050505 !important; border-radius: 2px !important; }
+div.stButton > button:hover, div[data-testid="stDownloadButton"] button:hover { background: #25A9D6 !important; border-color: #25A9D6 !important; }
+div[data-testid="stTextInput"] input, div[data-testid="stTextArea"] textarea, div[data-testid="stSelectbox"] div[data-baseweb="select"] > div, div[data-testid="stNumberInput"] input { background: #101014 !important; color: #F2F2F7 !important; border-color: #34343D !important; border-radius: 2px !important; }
+[data-baseweb="popover"], [data-baseweb="menu"], [role="listbox"] { background: #101014 !important; color: #F2F2F7 !important; }
+[data-testid="stAlert"] { background: #101014 !important; border-radius: 2px !important; }
+hr { border-color: #24242B !important; }
+[data-testid="stExpander"] { border: 1px solid #24242B !important; border-radius: 2px !important; }
+[data-testid="stExpander"] summary { color: #F2F2F7 !important; }
+[data-testid="stCaptionContainer"] { color: #A8A8B3 !important; }
+</style>
+""", unsafe_allow_html=True)
+
+# Use a dark plotting palette for Plotly Express figures.
+px.defaults.template = "plotly_dark"
+px.defaults.color_discrete_sequence = ["#007BA7", "#FF10F0"]
 
 # PATHS
 
@@ -345,24 +427,24 @@ def style_chart(fig, height=320):
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(
             family="Inter",
-            color="#bdc9dc",
+            color="#B8B8C2",
             size=11,
         ),
         margin=dict(l=10, r=10, t=35, b=10),
         legend=dict(
             bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#bdc9dc"),
+            font=dict(color="#B8B8C2"),
         ),
     )
 
     fig.update_xaxes(
-        gridcolor="#263448",
-        zerolinecolor="#263448",
+        gridcolor="#24242B",
+        zerolinecolor="#24242B",
     )
 
     fig.update_yaxes(
-        gridcolor="#263448",
-        zerolinecolor="#263448",
+        gridcolor="#24242B",
+        zerolinecolor="#24242B",
     )
 
     return fig
@@ -374,14 +456,14 @@ with st.sidebar:
     st.markdown(
         """
         <div style="padding: 10px 0 25px;">
-            <div style="font-size:27px;font-weight:800;color:#f4f7ff;">
-                Res<span style="color:#ff6576;">Q</span> AI
+            <div style="font-size:27px;font-weight:800;color:#F5F5FA;">
+                Res<span style="color:#FF10F0;">Q</span> AI
             </div>
-            <div style="color:#8fa3bf;font-size:12px;">
-                DISASTER INTELLIGENCE
+            <div style="color:#007BA7;font-size:12px;">
+                FIELD INTELLIGENCE / 01
             </div>
-            <div style="color:#647b99;font-size:11px;margin-top:5px;">
-                Powered by QUANTEX
+            <div style="color:#007BA7;font-size:11px;margin-top:5px;">
+                A QUANTEX field system
             </div>
         </div>
         """,
@@ -407,9 +489,9 @@ with st.sidebar:
     st.markdown(
         """
         <div style="font-size:12px;line-height:2.5;">
-        <span style="color:#46df9b;">●</span> USGS Earthquake Feed<br>
-        <span style="color:#46df9b;">●</span> Historical Disaster Dataset<br>
-        <span style="color:#46df9b;">●</span> XGBoost Severity Model<br>\n        <span style="color:#46df9b;">●</span> HumAID NLP Classifier
+        <span style="color:#007BA7;">●</span> USGS Earthquake Feed<br>
+        <span style="color:#007BA7;">●</span> Historical Disaster Dataset<br>
+        <span style="color:#007BA7;">●</span> XGBoost Severity Model<br>\n        <span style="color:#007BA7;">●</span> HumAID NLP Classifier
         </div>
         """,
         unsafe_allow_html=True,
@@ -434,13 +516,13 @@ historical = get_historical_data()
 st.markdown(
     """
     <div class="hero">
-        <div class="hero-label">QUANTEX • IBM Z DATATHON 2026</div>
-        <h1>Res<span style="color:#ff6576;">Q</span> AI</h1>
-        <div style="font-size:19px;color:#c5d3e7;font-weight:600;">
+        <div class="hero-label">QUANTEX  /  IBM Z DATATHON 2026  /  FIELD SYSTEM</div>
+        <h1>Res<span style="color:#FF10F0;">Q</span> AI</h1>
+        <div style="font-size:19px;color:#B8B8C2;font-weight:600;">
             AI-Powered Disaster Intelligence & Response
         </div>
         <p style="margin-top:10px;">
-            Real-time monitoring. Data-driven insights. Safer communities.
+            A field intelligence workspace for monitoring seismic activity, examining historical events, and triaging humanitarian signals.
         </p>
     </div>
     """,
@@ -451,12 +533,12 @@ st.markdown(
 
 if page == "Overview":
 
-    st.markdown('<div class="section-heading">Operational Overview</div>',
+    st.markdown('<div class="section-heading">Situation brief</div>',
                 unsafe_allow_html=True)
 
     st.markdown(
         '<div class="section-subtitle">'
-        'Live earthquake monitoring and historical disaster intelligence'
+        'Current USGS feed alongside the historical dataset and model outputs'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -537,20 +619,20 @@ if page == "Overview":
                 size=map_df["Magnitude"].fillna(0).clip(lower=0.1),
                 hover_name="Location",
                 hover_data=["Magnitude", "Depth (km)", "Time (UTC)"],
-                color_continuous_scale=["#f7b955", "#ff7b51", "#ff435f"],
+                color_continuous_scale=["#050505", "#007BA7", "#FF10F0"],
                 projection="natural earth",
             )
 
             fig.update_geos(
                 bgcolor="rgba(0,0,0,0)",
                 showland=True,
-                landcolor="#182537",
+                landcolor="#101014",
                 showocean=True,
-                oceancolor="#0b1421",
+                oceancolor="#050505",
                 showcountries=True,
-                countrycolor="#334257",
+                countrycolor="#24242B",
                 showcoastlines=True,
-                coastlinecolor="#334257",
+                coastlinecolor="#24242B",
                 showframe=False,
             )
 
@@ -558,13 +640,14 @@ if page == "Overview":
                 height=410,
                 margin=dict(l=0, r=0, t=0, b=0),
                 paper_bgcolor="rgba(0,0,0,0)",
-                font=dict(color="#cbd5e1"),
+                font=dict(color="#D6D6DF"),
                 coloraxis_colorbar=dict(
                     title="Magnitude",
-                    tickfont=dict(color="#cbd5e1"),
+                    tickfont=dict(color="#D6D6DF"),
                 ),
             )
 
+            fig.update_layout(template="plotly_dark", paper_bgcolor="#050505", plot_bgcolor="#050505", font_color="#F2F2F7")
             st.plotly_chart(fig, use_container_width=True)
 
         else:
@@ -629,9 +712,9 @@ if page == "Overview":
             )
 
             colors = {
-                "High": "#ff596b",
-                "Medium": "#ffad55",
-                "Low": "#45d6a0",
+                "High": "#FF10F0",
+                "Medium": "#007BA7",
+                "Low": "#777784",
             }
 
             fig = px.pie(
@@ -646,7 +729,7 @@ if page == "Overview":
             fig.update_traces(
                 textposition="inside",
                 textinfo="percent",
-                marker=dict(line=dict(color="#101824", width=3)),
+                marker=dict(line=dict(color="#24242B", width=3)),
             )
 
             fig.update_layout(
@@ -658,7 +741,7 @@ if page == "Overview":
                         text=f"<b>{len(historical):,}</b><br>records",
                         x=0.5,
                         y=0.5,
-                        font=dict(size=20, color="#f4f7ff"),
+                        font=dict(size=20, color="#F5F5FA"),
                         showarrow=False,
                     )
                 ],
@@ -702,7 +785,7 @@ if page == "Overview":
                 y="Disaster Type",
                 orientation="h",
                 color="Records",
-                color_continuous_scale=["#385d9d", "#9b7bff", "#ff6576"],
+                color_continuous_scale=["#050505", "#007BA7", "#FF10F0"],
             )
 
             fig.update_layout(coloraxis_showscale=False)
@@ -913,9 +996,9 @@ elif page == "AI Analysis":
                         y="Records",
                         color="Severity",
                         color_discrete_map={
-                            "High": "#ff596b",
-                            "Medium": "#ffad55",
-                            "Low": "#45d6a0",
+                            "High": "#FF10F0",
+                            "Medium": "#007BA7",
+                            "Low": "#777784",
                         },
                     )
 
@@ -976,7 +1059,7 @@ elif page == "AI Analysis":
                             matrix,
                             text_auto=True,
                             aspect="auto",
-                            color_continuous_scale="Blues",
+                            color_continuous_scale=[[0, "#050505"], [0.55, "#007BA7"], [1, "#FF10F0"]],
                             labels={
                                 "x": "Predicted",
                                 "y": "Historical Label",
@@ -1079,7 +1162,7 @@ if page == "AI Analysis":
                         y="Category",
                         orientation="h",
                         color="Probability",
-                        color_continuous_scale=["#385d9d", "#9b7bff", "#ff6576"],
+                        color_continuous_scale=["#050505", "#007BA7", "#FF10F0"],
                     )
                     fig.update_layout(
                         coloraxis_showscale=False,
@@ -1136,7 +1219,9 @@ elif page == "About":
     - IBM Granite is not integrated in this dashboard.
     """)
 
+# =========================================================
 # FOOTER
+# =========================================================
 
 st.divider()
 
